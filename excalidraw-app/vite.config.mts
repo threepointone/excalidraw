@@ -36,6 +36,14 @@ export default defineConfig({
             return `locales/${id.substring(index + 8)}`;
           }
         },
+        assetFileNames: (assetsInfo) => {
+          if (assetsInfo.name?.match(/.+.(ttf|woff2|otf)/)) {
+            // keep fonts in the root due to backwards compatibility (i.e. embedded inside SVGs)
+            return "[name][extname]";
+          }
+
+          return "assets/[name]-[hash][extname]"
+        }
       },
     },
     sourcemap: true,

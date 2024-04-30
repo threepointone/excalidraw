@@ -9,6 +9,7 @@ import { trackEvent } from "../analytics";
 import { ButtonIconSelect } from "../components/ButtonIconSelect";
 import { ColorPicker } from "../components/ColorPicker/ColorPicker";
 import { IconPicker } from "../components/IconPicker";
+import { FontPicker } from "../components/FontPicker/FontPicker";
 // TODO barnabasmolnar/editor-redesign
 // TextAlignTopIcon, TextAlignBottomIcon,TextAlignMiddleIcon,
 // ArrowHead icons
@@ -38,9 +39,6 @@ import {
   FontSizeExtraLargeIcon,
   EdgeSharpIcon,
   EdgeRoundIcon,
-  FreedrawIcon,
-  FontFamilyNormalIcon,
-  FontFamilyCodeIcon,
   TextAlignLeftIcon,
   TextAlignCenterIcon,
   TextAlignRightIcon,
@@ -54,7 +52,6 @@ import {
 import {
   DEFAULT_FONT_FAMILY,
   DEFAULT_FONT_SIZE,
-  FONT_FAMILY,
   ROUNDNESS,
   STROKE_WIDTH,
   VERTICAL_ALIGN,
@@ -79,7 +76,6 @@ import type {
   ExcalidrawElement,
   ExcalidrawLinearElement,
   ExcalidrawTextElement,
-  FontFamilyValues,
   TextAlign,
   VerticalAlign,
 } from "../element/types";
@@ -734,8 +730,14 @@ export const actionChangeFontFamily = register({
   label: "labels.fontFamily",
   trackEvent: false,
   perform: (elements, appState, value, app) => {
-    return {
-      elements: changeProperty(
+    const { currentItemFontFamily } = value;
+    let nextElements: ReadonlyArray<ExcalidrawElement> = elements;
+
+    if (
+      currentItemFontFamily &&
+      currentItemFontFamily !== appState.currentItemFontFamily
+    ) {
+      nextElements = changeProperty(
         elements,
         appState,
         (oldElement) => {
@@ -743,8 +745,8 @@ export const actionChangeFontFamily = register({
             const newElement: ExcalidrawTextElement = newElementWith(
               oldElement,
               {
-                fontFamily: value,
-                lineHeight: getDefaultLineHeight(value),
+                fontFamily: currentItemFontFamily,
+                lineHeight: getDefaultLineHeight(currentItemFontFamily),
               },
             );
             redrawTextBoundingBox(
@@ -758,75 +760,63 @@ export const actionChangeFontFamily = register({
           return oldElement;
         },
         true,
-      ),
+      );
+    }
+
+    return {
+      elements: nextElements,
       appState: {
         ...appState,
-        currentItemFontFamily: value,
+        ...value,
       },
       storeAction: StoreAction.CAPTURE,
     };
   },
-  PanelComponent: ({ elements, appState, updateData, app }) => {
-    const options: {
-      value: FontFamilyValues;
-      text: string;
-      icon: JSX.Element;
-      testId: string;
-    }[] = [
-      {
-        value: FONT_FAMILY.Virgil,
-        text: t("labels.handDrawn"),
-        icon: FreedrawIcon,
-        testId: "font-family-virgil",
-      },
-      {
-        value: FONT_FAMILY.Helvetica,
-        text: t("labels.normal"),
-        icon: FontFamilyNormalIcon,
-        testId: "font-family-normal",
-      },
-      {
-        value: FONT_FAMILY.Cascadia,
-        text: t("labels.code"),
-        icon: FontFamilyCodeIcon,
-        testId: "font-family-code",
-      },
-    ];
-
+  PanelComponent: ({ app, elements, appState, updateData }) => {
     return (
       <fieldset>
         <legend>{t("labels.fontFamily")}</legend>
-        <ButtonIconSelect<FontFamilyValues | false>
-          group="font-family"
-          options={options}
-          value={getFormValue(
-            elements,
-            appState,
-            (element) => {
-              if (isTextElement(element)) {
-                return element.fontFamily;
-              }
-              const boundTextElement = getBoundTextElement(
-                element,
-                app.scene.getNonDeletedElementsMap(),
-              );
-              if (boundTextElement) {
-                return boundTextElement.fontFamily;
-              }
-              return null;
-            },
-            (element) =>
-              isTextElement(element) ||
-              getBoundTextElement(
-                element,
-                app.scene.getNonDeletedElementsMap(),
-              ) !== null,
-            (hasSelection) =>
-              hasSelection
-                ? null
-                : appState.currentItemFontFamily || DEFAULT_FONT_FAMILY,
-          )}
-          onChange={(value) => updateData(value)}
+        <FontPicker
+          isOpened={appState.openPopup === "fontFamily"}
+          selectedFontFamily={
+            getFormValue(
+              elements,
+              appState,
+              (element) => {
+                if (isTextElement(element)) {
+                  return element.fontFamily;
+                }
+                const boundTextElement = getBoundTextElement(
+                  element,
+                  app.scene.getNonDeletedElementsMap(),
+                );
+                if (boundTextElement) {
+                  return boundTextElement.fontFamily;
+                }
+                return null;
+              },
+              (element) =>
+                isTextElement(element) ||
+                getBoundTextElement(
+                  element,
+                  app.scene.getNonDeletedElementsMap(),
+                ) !== null,
+              (hasSelection) =>
+                hasSelection ? null : appState.currentItemFontFamily,
+            ) || DEFAULT_FONT_FAMILY
+          }
+          onChange={(fontFamily) => {
+            updateData({ currentItemFontFamily: fontFamily } as Pick<
+              AppState,
+              "currentItemFontFamily"
+            >);
+          }}
+          onPopupChange={(isOpened) => {
+            updateData({ openPopup: isOpened ? "fontFamily" : null } as Pick<
+              AppState,
+              "openPopup"
+            >);
+          }}
         />
       </fieldset>
     );

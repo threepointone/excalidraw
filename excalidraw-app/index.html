@@ -124,22 +124,34 @@
     <!-- Excalidraw version -->
     <meta name="version" content="{version}" />
 
+    <!-- Preload Virgil (canvas fonts) and Assistant (ui font) with the high priority and in the quickest way possible -->
+    <!-- Otherwise, the browser would have to first parse CSS (@font-face) or JS (FontFace API), which would postpone the download -->
+    <!-- * with CSS (@font-face) the browser could skip loading some fonts if it does not find a usage; also there are no options for execution priorities ~ these fonts tend to be loaded towards the end -->
+    <!-- * with JS (FontFace API) we have more options, but still there is a necessary parsing step, so we could use it for less critical fonts (i.e. dynamic / custom fonts) -->
+    <link
+      rel="preload"
+      href="/Virgil2.woff2"
+      as="font"
+      vittype="font/woff2"
+      crossorigin="anonymous"
+    />
     <link
       rel="preload"
       href="/Virgil.woff2"
       as="font"
-      type="font/woff2"
+      vittype="font/woff2"
       crossorigin="anonymous"
     />
+    <!-- All the other Assistant weight variations should fallback to this one, rather than to a completely different font, while swapped back once fully loaded -->
     <link
       rel="preload"
-      href="/Cascadia.woff2"
+      href="/Assistant-Regular.woff2"
       as="font"
-      type="font/woff2"
+      vittype="font/woff2"
       crossorigin="anonymous"
     />
 
-    <link rel="stylesheet" href="/fonts/fonts.css" type="text/css" />
+    <link rel="stylesheet" href="/fonts.css" type="text/css" />
     <% if (typeof VITE_APP_DEV_DISABLE_LIVE_RELOAD != 'undefined' &&
     VITE_APP_DEV_DISABLE_LIVE_RELOAD == true) { %>
     <script>

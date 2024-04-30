@@ -109,12 +109,15 @@ export const CLASSES = {
   SHAPE_ACTIONS_MENU: "App-menu__left",
 };
 
+// FIXME_FONTS: should rather be a string, similar to https://drafts.csswg.org/css-fonts-4/#font-family-prop
 // 1-based in case we ever do `if(element.fontFamily)`
 export const FONT_FAMILY = {
   Virgil: 1,
   Helvetica: 2,
   Cascadia: 3,
   Assistant: 4,
+  Virgil2: 5,
+  Roboto: 6,
 };
 
 export const THEME = {
@@ -142,7 +145,7 @@ export const WINDOWS_EMOJI_FALLBACK_FONT = "Segoe UI Emoji";
 
 export const MIN_FONT_SIZE = 1;
 export const DEFAULT_FONT_SIZE = 20;
-export const DEFAULT_FONT_FAMILY: FontFamilyValues = FONT_FAMILY.Virgil;
+export const DEFAULT_FONT_FAMILY: FontFamilyValues = FONT_FAMILY.Virgil2;
 export const DEFAULT_TEXT_ALIGN = "left";
 export const DEFAULT_VERTICAL_ALIGN = "top";
 export const DEFAULT_VERSION = "{version}";

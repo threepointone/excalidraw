@@ -676,12 +676,41 @@ export const arrayToMapWithIndex = <T extends { id: string }>(
  */
 export const arrayToObject = <T>(
   array: readonly T[],
-  groupBy?: (value: T) => string,
+  groupBy?: (value: T) => string | number,
 ) =>
   array.reduce((acc, value) => {
     acc[groupBy ? groupBy(value) : String(value)] = value;
     return acc;
   }, {} as { [key: string]: T });
+
+/** Doubly linked node */
+export type Node<T> = T & {
+  prev: Node<T> | null;
+  next: Node<T> | null;
+};
+
+export const arrayToList = <T>(array: readonly T[]): Node<T>[] =>
+  array.reduce((acc, curr, index) => {
+    const node: Node<T> = { ...curr, prev: null, next: null };
+
+    // no-op for first item, we don't want circular references on a single item
+    if (index !== 0) {
+      const prevNode = acc[index - 1];
+      node.prev = prevNode;
+      prevNode.next = node;
+
+      if (index === array.length - 1) {
+        // make the references circular and connect head & tail
+        const firstNode = acc[0];
+        node.next = firstNode;
+        firstNode.prev = node;
+      }
+    }
+
+    acc.push(node);
+
+    return acc;
+  }, [] as Node<T>[]);
 
 export const isTestEnv = () => import.meta.env.MODE === "test";
 

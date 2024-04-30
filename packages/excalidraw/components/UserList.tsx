@@ -9,11 +9,13 @@ import type { ActionManager } from "../actions/manager";
 
 import * as Popover from "@radix-ui/react-popover";
 import { Island } from "./Island";
-import { searchIcon } from "./icons";
+import { QuickSearch } from "./QuickSearch";
 import { t } from "../i18n";
 import { isShallowEqual } from "../utils";
 import { supportsResizeObserver } from "../constants";
 import type { MarkRequired } from "../utility-types";
+import { ScrollableList } from "./ScrollableList";
+import { useFilter } from "../hooks/useFilter";
 
 export type GoToCollaboratorComponentProps = {
   socketId: SocketId;
@@ -40,7 +42,7 @@ const ConditionalTooltipWrapper = ({
   shouldWrap ? (
     <Tooltip label={username || "Unknown user"}>{children}</Tooltip>
   ) : (
-    <React.Fragment>{children}</React.Fragment>
+    <>{children}</>
   );
 
 const renderCollaborator = ({
@@ -127,7 +129,11 @@ export const UserList = React.memo(
       uniqueCollaboratorsMap.values(),
     ).filter((collaborator) => collaborator.username?.trim());
 
-    const [searchTerm, setSearchTerm] = React.useState("");
+    const [filteredCollaborators, filterByCallback] = useFilter(
+      uniqueCollaboratorsArray,
+      "username",
+      [uniqueCollaboratorsArray],
+    );
 
     const userListWrapper = React.useRef<HTMLDivElement | null>(null);
 
@@ -161,14 +167,6 @@ export const UserList = React.memo(
 
     const [maxAvatars, setMaxAvatars] = React.useState(DEFAULT_MAX_AVATARS);
 
-    const searchTermNormalized = searchTerm.trim().toLowerCase();
-
-    const filteredCollaborators = searchTermNormalized
-      ? uniqueCollaboratorsArray.filter((collaborator) =>
-          collaborator.username?.toLowerCase().includes(searchTerm),
-        )
-      : uniqueCollaboratorsArray;
-
     const firstNCollaborators = uniqueCollaboratorsArray.slice(
       0,
       maxAvatars - 1,
@@ -197,72 +195,67 @@ export const UserList = React.memo(
         )}
       </div>
     ) : (
-      <div className="UserList-wrapper" ref={userListWrapper}>
+      <div className="UserList__wrapper" ref={userListWrapper}>
         <div
           className={clsx("UserList", className)}
           style={{ [`--max-avatars` as any]: maxAvatars }}
         >
           {firstNAvatarsJSX}
 
-          {uniqueCollaboratorsArray.length > maxAvatars - 1 && (
-            <Popover.Root
-              onOpenChange={(isOpen) => {
-                if (!isOpen) {
-                  setSearchTerm("");
-                }
+          {/* {uniqueCollaboratorsArray.length > maxAvatars - 1 && ( */}
+          <Popover.Root open={true}>
+            <Popover.Trigger className="UserList__more">
+              +{uniqueCollaboratorsArray.length - maxAvatars + 1}
+            </Popover.Trigger>
+            <Popover.Content
+              style={{
+                zIndex: 2,
+                width: "15rem",
+                textAlign: "left",
               }}
+              align="end"
+              sideOffset={10}
             >
-              <Popover.Trigger className="UserList__more">
-                +{uniqueCollaboratorsArray.length - maxAvatars + 1}
-              </Popover.Trigger>
-              <Popover.Content
-                style={{
-                  zIndex: 2,
-                  width: "15rem",
-                  textAlign: "left",
-                }}
-                align="end"
-                sideOffset={10}
-              >
-                <Island style={{ overflow: "hidden" }}>
-                  {uniqueCollaboratorsArray.length >=
-                    SHOW_COLLABORATORS_FILTER_AT && (
-                    <div className="UserList__search-wrapper">
-                      {searchIcon}
-                      <input
-                        className="UserList__search"
-                        type="text"
-                        placeholder={t("userList.search.placeholder")}
-                        value={searchTerm}
-                        onChange={(e) => {
-                          setSearchTerm(e.target.value);
-                        }}
-                      />
-                    </div>
-                  )}
-                  <div className="dropdown-menu UserList__collaborators">
-                    {filteredCollaborators.length === 0 && (
-                      <div className="UserList__collaborators__empty">
-                        {t("userList.search.empty")}
-                      </div>
-                    )}
-                    <div className="UserList__hint">
-                      {t("userList.hint.text")}
-                    </div>
-                    {filteredCollaborators.map((collaborator) =>
-                      renderCollaborator({
-                        actionManager,
-                        collaborator,
-                        socketId: collaborator.socketId,
-                        withName: true,
-                        isBeingFollowed: collaborator.socketId === userToFollow,
-                      }),
-                    )}
-                  </div>
-                </Island>
-              </Popover.Content>
-            </Popover.Root>
-          )}
+              <Island padding={2}>
+                {true && (
+                  <QuickSearch
+                    placeholder={t("quickSearch.placeholder")}
+                    onChange={filterByCallback}
+                  />
+                )}
+                <ScrollableList
+                  className={"dropdown-menu UserList__collaborators"}
+                  placeholder={t("userList.empty")}
+                >
+                  {/* The list checks for `Children.count()`, hence defensively returning empty list */}
+                  {filteredCollaborators.length > 0
+                    ? [
+                        <div className="hint">{t("userList.hint.text")}</div>,
+                        filteredCollaborators.map((collaborator) =>
+                          renderCollaborator({
+                            actionManager,
+                            collaborator,
+                            socketId: collaborator.socketId,
+                            withName: true,
+                            isBeingFollowed:
+                              collaborator.socketId === userToFollow,
+                          }),
+                        ),
+                      ]
+                    : []}
+                </ScrollableList>
+                <Popover.Arrow
+                  width={20}
+                  height={10}
+                  style={{
+                    fill: "var(--popup-bg-color)",
+                    filter: "drop-shadow(rgba(0, 0, 0, 0.05) 0px 3px 2px)",
+                  }}
+                />
+              </Island>
+            </Popover.Content>
+          </Popover.Root>
+          {/* )} */}
         </div>
       </div>
     );

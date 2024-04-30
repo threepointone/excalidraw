@@ -1,4 +1,10 @@
-/* http://www.eaglefonts.com/fg-virgil-ttf-131249.htm */
+/* Canvas fonts */
+@font-face {
+  font-family: "Virgil2";
+  src: url("Virgil2.woff2");
+  font-display: swap;
+}
+
 @font-face {
   font-family: "Virgil";
   src: url("Virgil.woff2");
@@ -12,6 +18,7 @@
   font-display: swap;
 }
 
+/* UI fonts */
 @font-face {
   font-family: "Assistant";
   src: url("Assistant-Regular.woff2");
