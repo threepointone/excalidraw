@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { searchIcon } from "./icons";
 
 import "./QuickSearch.scss";
@@ -12,12 +12,6 @@ interface QuickSearchProps {
 
 export const QuickSearch = React.forwardRef<HTMLInputElement, QuickSearchProps>(
   ({ className, placeholder, onChange }, ref) => {
-    const [searchTerm, setSearchTerm] = useState("");
-
-    useEffect(() => {
-      onChange(searchTerm.trim().toLowerCase());
-    }, [onChange, searchTerm]);
-
     return (
       <div className={clsx("QuickSearch__wrapper", className)}>
         {searchIcon}
@@ -26,8 +20,7 @@ export const QuickSearch = React.forwardRef<HTMLInputElement, QuickSearchProps>(
           className="QuickSearch__input"
           type="text"
           placeholder={placeholder}
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={(e) => onChange(e.target.value.trim().toLowerCase())}
         />
       </div>
     );

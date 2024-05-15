@@ -1,7 +1,8 @@
+import type { KeyboardEventHandler } from "react";
 import React, {
-  KeyboardEventHandler,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -21,15 +22,15 @@ import { ButtonSeparator } from "../ButtonSeparator";
 import { QuickSearch } from "../QuickSearch";
 import { ScrollableList } from "../ScrollableList";
 import { PropertiesPopover } from "../PropertiesPopover";
-import { FontFamilyValues } from "../../element/types";
+import type { FontFamilyValues } from "../../element/types";
 import { FONT_FAMILY } from "../../constants";
 import { t } from "../../i18n";
-import { useFilter } from "../../hooks/useFilter";
 import { useExcalidrawContainer } from "../App";
 
 import "./FontPicker.scss";
 import { KEYS } from "../../keys";
-import { Node, arrayToList } from "../../utils";
+import type { Node } from "../../utils";
+import { arrayToList } from "../../utils";
 
 interface FontPickerProps {
   isOpened: boolean;
@@ -207,16 +208,23 @@ const FontPickerContent = React.memo(
   ({ selectedFontFamily, onPick, onClose }: FontPickerContentProps) => {
     const { container } = useExcalidrawContainer();
     const inputRef = useRef<HTMLInputElement>(null);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [allFonts] = useState(getAllFonts());
 
-    const [filteredFonts, filterByCallback] = useFilter(getAllFonts(), "text");
+    const filteredFonts = useMemo(
+      () =>
+        allFonts.filter((font) => font.text.toLowerCase().includes(searchTerm)),
+      [allFonts, searchTerm],
+    );
+
     const [focusedFont, setFocusedFont] = useState(
       getUnfocusedFont(filteredFonts),
     );
 
-    useEffect(() => {
-      // blindly always reset the focus on filter (causes additional re-render, which is acceptable)
-      setFocusedFont(getUnfocusedFont(filteredFonts));
-    }, [filteredFonts]);
+    useEffect(
+      () => setFocusedFont(getUnfocusedFont(filteredFonts)),
+      [filteredFonts],
+    );
 
     const handleKeyDown = useCallback<KeyboardEventHandler<HTMLDivElement>>(
       (event) => {
@@ -249,7 +257,7 @@ const FontPickerContent = React.memo(
         <QuickSearch
           ref={inputRef}
           placeholder={t("quickSearch.placeholder")}
-          onChange={filterByCallback}
+          onChange={setSearchTerm}
         />
         <ScrollableList
           className="FontPicker__list dropdown-menu"
