@@ -542,6 +542,9 @@
     "placeholder": "Quick search"
   },
   "fontList": {
+    "badge": {
+      "new": "new"
+    },
     "empty": "No fonts found"
   },
   "userList": {

@@ -54,43 +54,43 @@ const DropdownMenuItem = ({
 };
 DropdownMenuItem.displayName = "DropdownMenuItem";
 
+export const DropDownMenuItemBadgeType = {
+  GREEN: "green",
+  BLUE: "blue",
+};
+
 export const DropDownMenuItemBadge = ({
-  type = "pink",
+  type = DropDownMenuItemBadgeType.BLUE,
   children,
 }: {
-  type?: "green" | "pink";
+  type?: typeof DropDownMenuItemBadgeType[keyof typeof DropDownMenuItemBadgeType];
   children: React.ReactNode;
 }) => {
   const { theme } = useExcalidrawAppState();
-  const customStyle =
-    type === "pink"
-      ? {
-          backgroundColor: "pink",
-          color: "darkred",
-        }
-      : {
-          backgroundColor: "var(--background-color-badge)",
-          color: "var(--color-badge)",
-        };
+  const style = {
+    display: "inline-flex",
+    marginLeft: "auto",
+    padding: "2px 4px",
+    borderRadius: 6,
+    fontSize: 9,
+    fontFamily: "Cascadia, monospace",
+    border: theme === THEME.LIGHT ? "1.5px solid white" : "none",
+  };
+
+  if (type === "green") {
+    Object.assign(style, {
+      backgroundColor: "var(--background-color-badge)",
+      color: "var(--color-badge)",
+    });
+  } else {
+    Object.assign(style, {
+      background: "var(--color-promo)",
+      color: "var(--color-surface-lowest)",
+    });
+  }
 
   return (
-    <div
-      className="DropDownMenuItemBadge"
-      style={{
-        display: "inline-flex",
-        marginLeft: "auto",
-        padding: "2px 4px",
-        background: "var(--color-promo)",
-        // color: "var(--color-surface-lowest)",
-        borderRadius: 6,
-        fontSize: 9,
-        fontFamily: "Cascadia, monospace",
-        // fontSize: "0.625rem",
-        // borderRadius: "8px",
-        ...customStyle,
-        border: theme === THEME.LIGHT ? "1.5px solid white" : "none",
-      }}
-    >
+    <div className="DropDownMenuItemBadge" style={style}>
       {children}
     </div>
   );

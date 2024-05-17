@@ -689,6 +689,9 @@ export type Node<T> = T & {
   next: Node<T> | null;
 };
 
+/**
+ * Creates a circular doubly linked list by adding `prev` and `next` props to the existing array nodes.
+ */
 export const arrayToList = <T>(array: readonly T[]): Node<T>[] =>
   array.reduce((acc, curr, index) => {
     const node: Node<T> = { ...curr, prev: null, next: null };
