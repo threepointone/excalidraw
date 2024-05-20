@@ -56,6 +56,7 @@ DropdownMenuItem.displayName = "DropdownMenuItem";
 
 export const DropDownMenuItemBadgeType = {
   GREEN: "green",
+  RED: "red",
   BLUE: "blue",
 };
 
@@ -77,16 +78,25 @@ export const DropDownMenuItemBadge = ({
     border: theme === THEME.LIGHT ? "1.5px solid white" : "none",
   };
 
-  if (type === "green") {
-    Object.assign(style, {
-      backgroundColor: "var(--background-color-badge)",
-      color: "var(--color-badge)",
-    });
-  } else {
-    Object.assign(style, {
-      background: "var(--color-promo)",
-      color: "var(--color-surface-lowest)",
-    });
+  switch (type) {
+    case DropDownMenuItemBadgeType.GREEN:
+      Object.assign(style, {
+        backgroundColor: "var(--background-color-badge)",
+        color: "var(--color-badge)",
+      });
+      break;
+    case DropDownMenuItemBadgeType.RED:
+      Object.assign(style, {
+        backgroundColor: "pink",
+        color: "darkred",
+      });
+      break;
+    case DropDownMenuItemBadgeType.BLUE:
+    default:
+      Object.assign(style, {
+        background: "var(--color-promo)",
+        color: "var(--color-surface-lowest)",
+      });
   }
 
   return (

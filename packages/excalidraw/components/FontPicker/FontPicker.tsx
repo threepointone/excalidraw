@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from "react";
 import * as Popover from "@radix-ui/react-popover";
 
-import { FontPickerContent } from "./FontPickerContent";
+import { FontPickerList } from "./FontPickerList";
 import { FontPickerTrigger } from "./FontPickerTrigger";
 import { ButtonIconSelect } from "../ButtonIconSelect";
 import {
@@ -83,7 +83,7 @@ export const FontPicker = React.memo(
         <Popover.Root open={isOpened} onOpenChange={onPopupChange}>
           <FontPickerTrigger selectedFontFamily={selectedFontFamily} />
           {isOpened && (
-            <FontPickerContent
+            <FontPickerList
               selectedFontFamily={selectedFontFamily}
               onPick={onClick}
               onClose={onClosePopup}

@@ -35,11 +35,16 @@ export interface FontDescriptor {
   };
 }
 
+// FIXME_FONTS: this cannot be static as the prev / next references change on each input
 export const ALL_FONTS: Map<number, Node<FontDescriptor>> = arrayToList([
   {
     value: FONT_FAMILY.Virgil,
     icon: FreedrawIcon,
     text: "Virgil 1",
+    badge: {
+      type: DropDownMenuItemBadgeType.RED,
+      placeholder: t("fontList.badge.old"),
+    },
   },
   {
     value: FONT_FAMILY.Virgil2,
@@ -76,14 +81,14 @@ export const getUnfocusedFont = (filteredFonts: FontDescriptor[]) =>
     next: filteredFonts[0],
   } as Node<FontDescriptor>);
 
-interface FontPickerContentProps {
+interface FontPickerListProps {
   selectedFontFamily: FontFamilyValues;
   onPick: (value: number) => void;
   onClose: () => void;
 }
 
-export const FontPickerContent = React.memo(
-  ({ selectedFontFamily, onPick, onClose }: FontPickerContentProps) => {
+export const FontPickerList = React.memo(
+  ({ selectedFontFamily, onPick, onClose }: FontPickerListProps) => {
     const { container } = useExcalidrawContainer();
     const allFonts = useMemo(() => [...ALL_FONTS.values()], []);
     const [searchTerm, setSearchTerm] = useState("");

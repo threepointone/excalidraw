@@ -4,7 +4,7 @@ import {
   type FontDescriptor,
   getUnfocusedFont,
   getFontByValue,
-} from "./FontPickerContent";
+} from "./FontPickerList";
 
 interface FontPickerKeyNavHandlerProps {
   event: React.KeyboardEvent<HTMLDivElement>;

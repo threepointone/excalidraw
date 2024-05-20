@@ -5,7 +5,7 @@ import { FontFamilyNormalIcon } from "../icons";
 import type { FontFamilyValues } from "../../element/types";
 import { t } from "../../i18n";
 import { isCustomFont } from "./FontPicker";
-import { getFontByValue } from "./FontPickerContent";
+import { getFontByValue } from "./FontPickerList";
 
 interface FontPickerTriggerProps {
   selectedFontFamily: FontFamilyValues;
