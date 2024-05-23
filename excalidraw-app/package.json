@@ -26,17 +26,19 @@
     "node": ">=18.0.0"
   },
   "dependencies": {
+    "concurrently": "^8.2.2",
     "vite-plugin-html": "3.2.2"
   },
   "prettier": "@excalidraw/prettier-config",
   "scripts": {
     "build-node": "node ./scripts/build-node.js",
-    "build:app:docker": "cross-env VITE_APP_DISABLE_SENTRY=true VITE_APP_DISABLE_TRACKING=true vite build",
-    "build:app": "cross-env VITE_APP_GIT_SHA=$VERCEL_GIT_COMMIT_SHA vite build",
+    "build:app:docker": "npx cross-env VITE_APP_DISABLE_SENTRY=true VITE_APP_DISABLE_TRACKING=true vite build",
+    "build:app": "npx cross-env VITE_APP_GIT_SHA=$(git rev-parse HEAD) vite build",
     "build:version": "node ../scripts/build-version.js",
     "build": "yarn build:app && yarn build:version",
-    "start": "yarn && vite",
+    "start": "npx concurrently --kill-others-on-fail \"vite\" \"partykit dev\"",
     "start:production": "npm run build && npx http-server build -a localhost -p 5001 -o",
+    "deploy": "yarn build && npx partykit deploy",
     "build:preview": "yarn build && vite preview --port 5000"
   }
 }

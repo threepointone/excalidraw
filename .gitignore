@@ -27,3 +27,4 @@ dev-dist
 html
 examples/**/bundle.*
 meta*.json
+.partykit

@@ -1,0 +1,9 @@
+{
+  "$schema": "https://www.partykit.io/schema.json",
+  "name": "excalidraw-party",
+  "main": "party/server.ts",
+  "compatibilityDate": "2024-05-23",
+  "serve": {
+    "path": "build"
+  }
+}

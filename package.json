@@ -17,6 +17,7 @@
     "i18next-browser-languagedetector": "6.1.4",
     "idb-keyval": "6.0.3",
     "jotai": "1.13.1",
+    "party.io": "^0.0.14",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "socket.io-client": "4.7.2"
@@ -42,6 +43,7 @@
     "husky": "7.0.4",
     "jsdom": "22.1.0",
     "lint-staged": "12.3.7",
+    "partykit": "^0.0.105",
     "pepjs": "0.5.3",
     "prettier": "2.6.2",
     "rewire": "6.0.0",
